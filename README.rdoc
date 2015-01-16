@@ -1,0 +1,32 @@
+= stockpile
+
+home :: https://stockpile.github.io/
+code :: https://github.com/<username>/stockpile/
+bugs :: https://github.com/<username>/stockpile/issues
+continuous integration :: {<img src="https://travis-ci.org/<username>/stockpile.png" />}[https://travis-ci.org/<username>/stockpile]
+
+* FIX (url)
+
+== Description
+
+FIX (describe your package)
+
+== Features/Problems
+
+* FIX (list of features or problems)
+
+== Synopsis
+
+  FIX (code sample of usage)
+
+== Requirements
+
+* FIX (list of requirements)
+
+== Install
+
+* FIX (sudo gem install, anything else)
+
+:include: Contributing.rdoc
+
+:include: Licence.rdoc

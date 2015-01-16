@@ -1,0 +1,13 @@
+.autotest
+.minitest.rb
+.travis.yml
+Contributing.rdoc
+History.rdoc
+Licence.rdoc
+Manifest.rdoc
+README.rdoc
+Rakefile
+bin/stockpile
+lib/stockpile.rb
+test/minitest_helper.rb
+test/test_stockpile.rb
