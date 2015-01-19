@@ -1,11 +1,9 @@
 = stockpile
 
 home :: https://stockpile.github.io/
-code :: https://github.com/<username>/stockpile/
-bugs :: https://github.com/<username>/stockpile/issues
-continuous integration :: {<img src="https://travis-ci.org/<username>/stockpile.png" />}[https://travis-ci.org/<username>/stockpile]
-
-* FIX (url)
+code :: https://github.com/halostatue/stockpile/
+bugs :: https://github.com/halostatue/stockpile/issues
+continuous integration :: {<img src="https://travis-ci.org/halostatue/stockpile.png" />}[https://travis-ci.org/halostatue/stockpile]
 
 == Description
 

@@ -50,7 +50,7 @@ generate the RDoc.
 Here's the most direct way to get your work merged into the project:
 
 * Fork the project.
-* Clone down your fork (<tt>git clone git://github.com/<username>/stockpile.git</tt>).
+* Clone down your fork (<tt>git clone git://github.com/halostatue/stockpile.git</tt>).
 * Create a topic branch to contain your change (<tt>git checkout -b my\_awesome\_feature</tt>).
 * Hack away, add tests. Not necessarily in that order.
 * Make sure everything still passes by running +rake+.
@@ -61,4 +61,4 @@ Here's the most direct way to get your work merged into the project:
 
 === Contributors
 
-* FIX created stockpile.
+* Austin Ziegler created stockpile.

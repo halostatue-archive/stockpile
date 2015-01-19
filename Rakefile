@@ -1,36 +1,45 @@
 # -*- ruby -*-
 
-require "rubygems"
-require "hoe"
+require 'rubygems'
+require 'hoe'
 
+Hoe.plugin :doofus
+Hoe.plugin :gemspec2
+Hoe.plugin :git
+Hoe.plugin :minitest
+Hoe.plugin :travis
+Hoe.plugin :email unless ENV['CI'] or ENV['TRAVIS']
 
-
-Hoe.spec "stockpile" do
-  # HEY! If you fill these out in ~/.hoe_template/minitest-travis/Rakefile.erb,
-  # you'll never have to touch them again!
-  # (delete this comment too, of course)
-
-  developer('FIX', 'FIX@example.com')
+spec = Hoe.spec 'stockpile' do
+  developer('Austin Ziegler', 'halostatue@gmail.com')
 
   self.history_file = 'History.rdoc'
   self.readme_file = 'README.rdoc'
   self.extra_rdoc_files = FileList["*.rdoc"].to_a
 
-  license "MIT" # FIX this should match the license in the README
-  # self.licenses = [ "MIT", ... ]
+  license "MIT"
 
+  self.need_tar = true
+  self.require_ruby_version '>= 1.9.2'
+
+  self.extra_dev_deps << ['fakeredis', '~> 0.5']
   self.extra_dev_deps << ['hoe-doofus', '~> 1.0']
   self.extra_dev_deps << ['hoe-gemspec2', '~> 1.1']
   self.extra_dev_deps << ['hoe-git', '~> 1.5']
-  self.extra_dev_deps << ['hoe-rubygems', '~> 1.0']
   self.extra_dev_deps << ['hoe-travis', '~> 1.2']
   self.extra_dev_deps << ['minitest', '~> 5.4']
-  self.extra_dev_deps << ['rake', '~> 10.0']
-
-  # self.extra_dev_deps << ['simplecov', '~> 0.7']
+  self.extra_dev_deps << ['minitest-around', '~> 0.3']
+  self.extra_dev_deps << ['minitest-autotest', '~> 1.0']
+  self.extra_dev_deps << ['minitest-bisect', '~> 1.2']
+  self.extra_dev_deps << ['minitest-focus', '~> 1.1']
+  self.extra_dev_deps << ['minitest-moar', '~> 0.0']
+  self.extra_dev_deps << ['minitest-pretty_diff', '~> 0.1']
+  self.extra_dev_deps << ['minitest-rerun', '~> 0.1']
+  self.extra_dev_deps << ['rake', '>= 10.0']
+  self.extra_dev_deps << ['redis-namespace', '~> 1.5']
+  self.extra_dev_deps << ['simplecov', '~> 0.7']
 end
 
-=begin
 namespace :test do
   task :coverage do
     spec.test_prelude = [
@@ -41,6 +50,5 @@ namespace :test do
     Rake::Task['test'].execute
   end
 end
-=end
 
 # vim: syntax=ruby
