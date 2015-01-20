@@ -35,25 +35,31 @@ describe Stockpile do
     it "provides Mod.cache" do
       ::Stockpile.enable!(mod)
       assert_respond_to mod, :cache
+      assert_respond_to mod, :cache_adapter
+      assert_respond_to mod, :cache_adapter!
       assert_equal "OK", mod.cache.connection.set('answer', 42)
       assert_equal "42", mod.cache.connection.get('answer')
     end
 
-    it "{ adaptable: true } -> Mod.cache_adapter[!]" do
-      ::Stockpile.enable!(mod, :adaptable => true)
-      assert_respond_to mod, :cache_adapter
-      assert_respond_to mod, :cache_adapter!
+    it "{ adaptable: false } -> Mod.cache_adapter[!]" do
+      ::Stockpile.enable!(mod, :adaptable => false)
+      assert_respond_to mod, :cache
+      refute_respond_to mod, :cache_adapter
+      refute_respond_to mod, :cache_adapter!
     end
 
     it "{ method: stockpile } -> Mod.stockpile" do
       ::Stockpile.enable!(mod, :method => :stockpile)
       assert_respond_to mod, :stockpile
-    end
-
-    it "{ method: :stockpile, adaptable: true } -> Mod.stockpile_adapter[!]" do
-      ::Stockpile.enable!(mod, :method => :stockpile, :adaptable => true)
       assert_respond_to mod, :stockpile_adapter
       assert_respond_to mod, :stockpile_adapter!
+    end
+
+    it "{ method: :stockpile, adaptable: false } -> Mod.stockpile_adapter[!]" do
+      ::Stockpile.enable!(mod, :method => :stockpile, :adaptable => false)
+      assert_respond_to mod, :stockpile
+      refute_respond_to mod, :stockpile_adapter
+      refute_respond_to mod, :stockpile_adapter!
     end
 
     describe "Mod.cache_adapter" do

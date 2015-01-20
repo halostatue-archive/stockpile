@@ -10,11 +10,11 @@ require 'forwardable'
 # * Connection management. Some third-party providers of Redis limit
 #   simultaneous connections; Stockpile can manage a single connection that
 #   gets shared by all clients using a Stockpile instance.
-# * Providing an adapter mechanism.
+# * Providing an application-level cache adapter mechanism.
 class Stockpile
   extend Forwardable
 
-  VERSION = "1.0" # :nodoc:
+  VERSION = "0.5" # :nodoc:
 
   autoload :RedisConnectionManager, 'stockpile/redis_connection_manager'
 
@@ -26,19 +26,22 @@ class Stockpile
     end
 
     # Enables module or class +mod+ to contain a Stockpile instance and
-    # optionally provide an adapter interface. This creates a singleton method
-    # that returns a singleton Stockpile instance.
+    # provide an adapter interface (this can be disabled). This creates a
+    # singleton method that returns a singleton Stockpile instance.
     #
     # === Options
     # +method+:: The name of the method that manages the Stockpile instance.
     #            Defaults to +cache+.
-    # +adaptable+:: Also makes the +mod+ support adapters.
+    # +adaptable+:: Defines an adapter method if truthy (the default). Pass a
+    #               falsy value to disable. (The created adapter method will be
+    #               named according to the value of +method+, and so defaults
+    #               to +cache_adapter+.
     #
     # === Synopsis
     #
     #   # Using only for connection management.
     #   module Application
-    #     Stockpile.enable!(self)
+    #     Stockpile.enable!(self, :adaptable => false)
     #   end
     #   Application.cache # => a stockpile instance
     #   Application.cache.connection.set('answer', 42)
@@ -56,18 +59,18 @@ class Stockpile
     #   end
     #
     #   module AdaptableApplication; end
-    #   Stockpile.enable!(AdaptableApplication, :adaptable => true)
+    #   Stockpile.enable!(AdaptableApplication)
     #
-    #   # Adapt the cache to recognize #last_run_time.
+    #   # Adapt the cache object to recognize #last_run_time;
     #   AdaptableApplication.cache_adapter(LastRunTime)
     #   AdaptableApplication.cache.last_run_time('adaptable_application')
     #
-    #   # Adapt AdaptableApplication to recognize #last_run_time.
+    #   # or adapt AdaptableApplication to recognize #last_run_time;
     #   AdaptableApplication.cache_adapter(LastRunTime,
     #                                      AdaptableApplication)
     #   AdaptableApplication.last_run_time('adaptable_application')
     #
-    #   # Adapt LastRunTime to recognize #last_run_time.
+    #   # or adapt LastRunTime to recognize #last_run_time.
     #   AdaptableApplication.cache_adapter!(LastRunTime)
     #   LastRunTime.last_run_time('adaptable_application')
     def enable!(mod, options = {})
@@ -82,7 +85,7 @@ class Stockpile
         @__stockpile__ ||= ::Stockpile.new(init_options)
       end
 
-      if options[:adaptable]
+      if options.fetch(:adaptable, true)
         adapter = :"#{name}_adapter"
         msc.send(:define_method, adapter) do |m, k = nil|
           o = self
