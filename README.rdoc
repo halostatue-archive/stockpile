@@ -7,23 +7,159 @@ continuous integration :: {<img src="https://travis-ci.org/halostatue/stockpile.
 
 == Description
 
-FIX (describe your package)
+Stockpile is a simple key-value store connection manager, where each instance
+can manage one or more connections to a key-value store. Currently, the only
+implemented connection manager is for Redis.
 
-== Features/Problems
+Stockpile also provides an adapter mechanism that injects Stockpile
+functionality into an application module.
 
-* FIX (list of features or problems)
+== Features
 
-== Synopsis
+* Stockpile manages key-value store connections. Each Stockpile always contains
+  *one* connection, but additional client connections can be added as needed.
 
-  FIX (code sample of usage)
+  * Stockpile works in a *wide* connection mode, where additional client
+    connections are new instances of the client library.
+  * Stockpile can work in a *narrow* connection mode, where additional client
+    connections are the main Stockpile connection.
+
+* Stockpile makes it easy to create a managed application-level connection
+  manager, which can then be used for adapter methods to clean up code that
+  interacts with the cache.
 
 == Requirements
 
-* FIX (list of requirements)
+The desired key-value store must already be installed and/or specified in
+your Gemfile.
+
+== Synopsis
+
+  wide = Stockpile.new # A Stockpile to Redis.
+  wide.connection.set('hello', 'world') # => 'OK'
+  wide.connection.get('hello') # => 'world'
+
+  # Connections are independent from one another.
+  wide.connection_for(:other) != wide.connection # => true
+
+  # Or set ENV['STOCKPILE_CONNECTION_WDITH'] = 'narrow'
+  narrow = Stockpile.new(narrow: true) # A 'narrow' Stockpile to Redis.
+  narrow.connection_for(:other) == narrow.connection # => true
+
+  # Special Redis::Namespace handling for Resque. Assumes that redis-namespace
+  # has been installed, as well.
+  narrow.connection_for(:resque) != narrow.connection # => true
+  narrow.connection_for(:resque).redis == narrow.connection # => true
+
+  # Show a Stockpile with no adapter capabilities, but name the method
+  # stockpile, not cache. This will still usefully manage connections.
+  module Cacher
+    Stockpile.enable!(self, :method => :stockpile, :adaptable => false)
+  end
+  Cacher.respond_to?(:stockpile) # => true
+  Cacher.respond_to?(:stockpile_adapter) # => false
+  Cacher.stockpile.connection.set('hello', 'world') # => 'OK'
+  Cacher.stockpile.connection.get('hello') # => 'world'
+
+  # Now a Stockpile with adapter capabilities.
+  module Jobber
+    module LastRunTime
+      def last_run_time(key, value = nil)
+        if value
+          connection.hset(__method__, key, value.utc.iso8601)
+        else
+          value = connection.hget(__method__, key)
+          Time.parse(value) if value
+        end
+      end
+    end
+
+    Stockpile.enable!(self)
+  end
+  Jobber.respond_to?(:cache) # => true
+  Jobber.respond_to?(:cache_adapter) # => true
+
+  # Four ways:
+  # 1. Adapt Jobber.cache to recognize #last_run_time.
+  Jobber.cache_adapter(Jobber::LastRunTime)
+  Jobber.cache.last_run_time('hello', t = Time.now) # => true
+  Jobber.cache.last_run_time('hello') # => approximately t
+
+  # 2. Adapt Jobber.cache and another module to recognize #last_run_time.
+  module Foo; end
+  Jobber.cache_adapter(Jobber::LastRunTime, Foo)
+  Foo.last_run_time('hello', t = Time.now) # => true
+  Foo.last_run_time('hello') # => approximately t
+
+  # 3. Adapt Jobber.cache and Jobber to recognize #last_run_time.
+  Jobber.cache_adapter(Jobber::LastRunTime, Jobber)
+  Jobber.last_run_time('hello', t = Time.now) # => true
+  Jobber.last_run_time('hello') # => approximately t
+
+  # 4. Adapt Jobber.cache and Jobber::LastRunTime to recognize #last_run_time.
+  Jobber.cache_adapter!(Jobber::LastRunTime)
+  # or Jobber.cache_adapter(Jobber::LastRunTime, Jobber::LastRunTime)
+  Jobber::LastRunTime.last_run_time('hello', t = Time.now) # => true
+  Jobber::LastRunTime.last_run_time('hello') # => approximately t
+
+== Background
+
+Stockpile is the evolution of concepts I have applied to Rails applications
+over the last few years when working with Redis. In general, I have seen a few
+patterns that I consider to be suboptimal.
+
+* Developers often use +REDIS+ or <tt>$redis</tt> to initialize and access
+  their Redis instances. This could be fixed by using +Redis.current+, but that
+  doesn’t help with exposing implementation details where they aren’t needed.
+* Redis methods are often exposed directly in controllers or models, as
+
+    render json: $redis.hget('last_run_time', params[:method])
+
+  We don’t like seeing direct database access methods in our controllers, so
+  why do we put up with this for Redis?
+* Each Redis client manages its own connections, and at least one client
+  reconnection is forgotten when using a forking server like Unicorn.
+* Some providers of Redis services restrict the number of simultaneous
+  connections to a given Redis instance. With Rails caching, an application
+  cache, and Resque there are at least three simultaneous connections to Redis
+  for a given Rails server instancne, unless the same connection is reused.
+
+Stockpile addresses each of these, although very differently than I have
+addressed them in the past.
+
+=== Sample Rails Application
+
+I will be adapting a sample Rails application to demonstrate how Stockpile is
+to be used in Rails. A link to it will be provided when it is complete.
 
 == Install
 
-* FIX (sudo gem install, anything else)
+Put Stockpile in your Gemfile:
+
+  gem 'redis', '~> 3.0'
+  gem 'stockpile', '~> 0.5'
+
+Or manually install:
+
+  % gem install redis stockpile
+
+and require Stockpile in your code:
+
+  require 'redis'
+  require 'stockpile'
+
+Note that Stockpile requires that the interface to the key-value store is
+already installed; it does not directly depend on a key-value store for
+automatic installation. This is intentional. I am considering splitting
+Stockpile::RedisConnectionManager into a separate gem, _stockpile-redis_ that
+will explicitly depend on _redis-namespace_ and _redis_.
+
+== Stockpile Semantic Versioning
+
+Stockpile uses a {Semantic Versioning}[http://semver.org/] scheme with one
+change:
+
+* When PATCH is zero (+0+), it will be omitted from version references.
 
 :include: Contributing.rdoc
 
