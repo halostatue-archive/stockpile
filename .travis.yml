@@ -1,6 +1,7 @@
 ---
 language: ruby
 rvm:
+  - 2.2.0
   - 2.1.0
   - 2.0.0
   - 1.9.3
@@ -29,6 +30,6 @@ after_script:
 notifications:
   email:
     recipients:
-      - FIX@example.com
+      - halostatue@gmail.com
     on_success: change
     on_failure: always
