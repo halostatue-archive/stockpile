@@ -7,26 +7,18 @@ continuous integration :: {<img src="https://travis-ci.org/halostatue/stockpile.
 
 == Description
 
-Stockpile is a simple key-value store connection manager, where each instance
-can manage one or more connections to a key-value store. Currently, the only
-implemented connection manager is for Redis.
+Stockpile is a simple key-value store connection manager, implemented (so far) for Redis.
 
-Stockpile also provides an adapter mechanism that injects Stockpile
-functionality into an application module.
+Stockpile also provides an adapter so that its functionality can be accessed from within a module.
 
 == Features
 
-* Stockpile manages key-value store connections. Each Stockpile always contains
-  *one* connection, but additional client connections can be added as needed.
+* Stockpile manages key-value store connections. There are two standalone variants:
 
-  * Stockpile works in a *wide* connection mode, where additional client
-    connections are new instances of the client library.
-  * Stockpile can work in a *narrow* connection mode, where additional client
-    connections are the main Stockpile connection.
+  * *wide*, the default (<tt>Stockpile.new</tt>), where additional client connections are new instances of the client library.
+  * *narrow* (<tt>Stockpile.new(narrow: true)</tt>), where additional client connections use the same Stockpile instance
 
-* Stockpile makes it easy to create a managed application-level connection
-  manager, which can then be used for adapter methods to clean up code that
-  interacts with the cache.
+* Stockpile can also be included in a module (<tt>Stockpile.enable!(self)</tt>), which will give the module <tt>.stockpile</tt> and optionally <tt>.stockpile_adapter</tt> methods.
 
 == Requirements
 
@@ -104,13 +96,13 @@ your Gemfile.
 
 == Background
 
-Stockpile is the evolution of concepts I have applied to Rails applications
-over the last few years when working with Redis. In general, I have seen a few
-patterns that I consider to be suboptimal.
+Stockpile is the evolution of concepts I have applied to Rails applications over
+the last few years when working with Redis, and avoids the following common
+but suboptimal patterns:
 
-* Developers often use +REDIS+ or <tt>$redis</tt> to initialize and access
-  their Redis instances. This could be fixed by using +Redis.current+, but that
-  doesn’t help with exposing implementation details where they aren’t needed.
+* Developers use +REDIS+ or <tt>$redis</tt> to initialize and access their Redis
+  instances. This could be fixed by using +Redis.current+, but that still
+  exposes implementation details unnecessarily.
 * Redis methods are often exposed directly in controllers or models, as
 
     render json: $redis.hget('last_run_time', params[:method])
@@ -124,13 +116,10 @@ patterns that I consider to be suboptimal.
   cache, and Resque there are at least three simultaneous connections to Redis
   for a given Rails server instancne, unless the same connection is reused.
 
-Stockpile addresses each of these, although very differently than I have
-addressed them in the past.
-
 === Sample Rails Application
 
-I will be adapting a sample Rails application to demonstrate how Stockpile is
-to be used in Rails. A link to it will be provided when it is complete.
+I will be adapting a sample Rails application to demonstrate how Stockpile can
+be used in Rails. A link to it will be provided when it is complete.
 
 == Install
 
