@@ -22,7 +22,6 @@ spec = Hoe.spec 'stockpile' do
   self.need_tar = true
   self.require_ruby_version '>= 1.9.2'
 
-  self.extra_dev_deps << ['fakeredis', '~> 0.5']
   self.extra_dev_deps << ['hoe-doofus', '~> 1.0']
   self.extra_dev_deps << ['hoe-gemspec2', '~> 1.1']
   self.extra_dev_deps << ['hoe-git', '~> 1.5']
@@ -36,7 +35,6 @@ spec = Hoe.spec 'stockpile' do
   self.extra_dev_deps << ['minitest-pretty_diff', '~> 0.1']
   self.extra_dev_deps << ['minitest-rerun', '~> 0.1']
   self.extra_dev_deps << ['rake', '>= 10.0']
-  self.extra_dev_deps << ['redis-namespace', '~> 1.5']
   self.extra_dev_deps << ['simplecov', '~> 0.7']
 end
 

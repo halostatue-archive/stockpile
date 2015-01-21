@@ -14,9 +14,9 @@ require 'forwardable'
 class Stockpile
   extend Forwardable
 
-  VERSION = "0.5" # :nodoc:
+  VERSION = "1.0" # :nodoc:
 
-  autoload :RedisConnectionManager, 'stockpile/redis_connection_manager'
+  @default_manager = nil
 
   class << self
     # Determines if the default connection width is narrow or wide based on
@@ -41,7 +41,7 @@ class Stockpile
     #
     #   # Using only for connection management.
     #   module Application
-    #     Stockpile.enable!(self, :adaptable => false)
+    #     Stockpile.inject!(self, adaptable: false)
     #   end
     #   Application.cache # => a stockpile instance
     #   Application.cache.connection.set('answer', 42)
@@ -59,7 +59,7 @@ class Stockpile
     #   end
     #
     #   module AdaptableApplication; end
-    #   Stockpile.enable!(AdaptableApplication)
+    #   Stockpile.inject!(AdaptableApplication)
     #
     #   # Adapt the cache object to recognize #last_run_time;
     #   AdaptableApplication.cache_adapter(LastRunTime)
@@ -73,15 +73,18 @@ class Stockpile
     #   # or adapt LastRunTime to recognize #last_run_time.
     #   AdaptableApplication.cache_adapter!(LastRunTime)
     #   LastRunTime.last_run_time('adaptable_application')
-    def enable!(mod, options = {})
+    def inject!(mod, options = {})
       unless mod.kind_of?(Module)
         raise ArgumentError, "#{mod} is not a class or module"
       end
 
-      name = options.fetch(:method, :cache).to_sym
-      msc  = mod.singleton_class
+      name    = options.fetch(:method, :cache).to_sym
+      msc     = mod.singleton_class
+
+      default = options.fetch(:default_manager, nil)
 
       msc.send(:define_method, name) do |init_options = {}|
+        init_options = init_options.merge(default_manager: default)
         @__stockpile__ ||= ::Stockpile.new(init_options)
       end
 
@@ -107,20 +110,8 @@ class Stockpile
       end
     end
 
-    ##
-    # :attr_accessor: default_connection_manager
-    #
     # The default Stockpile cache connection manager.
-
-    ##
-    def default_connection_manager # :nodoc:
-      unless defined? @default_connection_manager
-        @default_connection_manager = Stockpile::RedisConnectionManager
-      end
-      @default_connection_manager
-    end
-
-    attr_writer :default_connection_manager # :nodoc:
+    attr_accessor :default_manager
   end
 
   # Creates a new Stockpile instance and connects to the connection provider
@@ -134,8 +125,10 @@ class Stockpile
   # constructor.
   #
   # +manager+:: The connection manager that will be used for creating
-  #             connections to this Stockpile. If not provided,
-  #             ::Stockpile.default_connection_manager will be used.
+  #             connections to this Stockpile. If not provided, either
+  #             +default_manager+ or ::Stockpile.default_manager will be used.
+  #             An error will be raised if no connection provider is available
+  #             through any means.
   # +clients+:: Connections will be created for the provided list of clients.
   #             These connections must be assigned to their appropriate clients
   #             after initialization. This may also be called +client+.
@@ -147,17 +140,24 @@ class Stockpile
   #  # Create and assign a connection to Redis.current, Resque, and Rollout.
   #  # Under a narrow connection management width, all three will be the
   #  # same client connection.
-  #  Stockpile.new(clients: [ :redis, :resque ]) do |stockpile|
+  #  Stockpile.new(manager: Stockpile::Redis, clients: [ :redis, :resque ]) do |stockpile|
   #    Redis.current = stockpile.connection_for(:redis)
   #    Resque.redis = stockpile.connection_for(:resque)
   #    # Clients will be created by name if necessary.
   #    $rollout = Rollout.new(stockpile.connection_for(:rollout))
   #  end
   def initialize(options = {})
-    manager = options.fetch(:manager, self.class.default_connection_manager)
+    manager = options.fetch(:manager) {
+      options[:default_manager] || self.class.default_manager
+    }
+
+    unless manager
+      raise ArgumentError, "No connection manager provided or set as default."
+    end
+
     clients = (Array(options[:clients]) + Array(options[:client])).flatten.uniq
 
-    options = { :narrow => Stockpile.narrow? }.merge(options.reject { |k, _|
+    options = { narrow: Stockpile.narrow? }.merge(options.reject { |k, _|
       k == :manager || k == :clients || k == :client
     })
 

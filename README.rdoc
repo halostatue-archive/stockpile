@@ -7,26 +7,27 @@ continuous integration :: {<img src="https://travis-ci.org/halostatue/stockpile.
 
 == Description
 
-Stockpile is a simple key-value store connection manager, where each instance
-can manage one or more connections to a key-value store. Currently, the only
-implemented connection manager is for Redis.
+Stockpile is a simple key-value store connection manager framework. Stockpile
+itself does not implement a connection manager, but places expectations for
+implemented connection managers. So far, only Redis has been implemented
+(stockpile-redis).
 
-Stockpile also provides an adapter mechanism that injects Stockpile
-functionality into an application module.
+Stockpile also provides an adapter so that its functionality can be accessed
+from within a module.
 
 == Features
 
-* Stockpile manages key-value store connections. Each Stockpile always contains
-  *one* connection, but additional client connections can be added as needed.
+* Stockpile manages key-value store connections. There are two variants:
 
-  * Stockpile works in a *wide* connection mode, where additional client
-    connections are new instances of the client library.
-  * Stockpile can work in a *narrow* connection mode, where additional client
-    connections are the main Stockpile connection.
+  * *wide* (<tt>Stockpile.new</tt>, the default), where additional client
+    connections are new instances of the client library;
+  * *narrow* (<tt>Stockpile.new(:narrow => true)</tt>, where additional client
+    connections use the same client library instance.
 
-* Stockpile makes it easy to create a managed application-level connection
-  manager, which can then be used for adapter methods to clean up code that
-  interacts with the cache.
+* Stockpile can also be injected into a module
+  (<tt>Stockpile.inject!(self, options = {})</tt>), which gives the module
+  cache management and adapter methods (<tt>.cache</tt> and
+  <tt>.cache_adapter</tt>, by default).
 
 == Requirements
 
@@ -54,7 +55,7 @@ your Gemfile.
   # Show a Stockpile with no adapter capabilities, but name the method
   # stockpile, not cache. This will still usefully manage connections.
   module Cacher
-    Stockpile.enable!(self, :method => :stockpile, :adaptable => false)
+    Stockpile.inject!(self, :method => :stockpile, :adaptable => false)
   end
   Cacher.respond_to?(:stockpile) # => true
   Cacher.respond_to?(:stockpile_adapter) # => false
@@ -74,7 +75,7 @@ your Gemfile.
       end
     end
 
-    Stockpile.enable!(self)
+    Stockpile.inject!(self)
   end
   Jobber.respond_to?(:cache) # => true
   Jobber.respond_to?(:cache_adapter) # => true
@@ -105,12 +106,12 @@ your Gemfile.
 == Background
 
 Stockpile is the evolution of concepts I have applied to Rails applications
-over the last few years when working with Redis. In general, I have seen a few
-patterns that I consider to be suboptimal.
+over the last few years when working with Redis, and avoids the following
+common but suboptimal patterns:
 
-* Developers often use +REDIS+ or <tt>$redis</tt> to initialize and access
-  their Redis instances. This could be fixed by using +Redis.current+, but that
-  doesn’t help with exposing implementation details where they aren’t needed.
+* Developers use +REDIS+ or <tt>$redis</tt> to initialize and access their
+  Redis instances. This could be fixed by using +Redis.current+, but that still
+  exposes implementation details unnecessarily.
 * Redis methods are often exposed directly in controllers or models, as
 
     render json: $redis.hget('last_run_time', params[:method])
@@ -124,35 +125,26 @@ patterns that I consider to be suboptimal.
   cache, and Resque there are at least three simultaneous connections to Redis
   for a given Rails server instancne, unless the same connection is reused.
 
-Stockpile addresses each of these, although very differently than I have
-addressed them in the past.
-
 === Sample Rails Application
 
-I will be adapting a sample Rails application to demonstrate how Stockpile is
-to be used in Rails. A link to it will be provided when it is complete.
+I will be adapting a sample Rails application to demonstrate how Stockpile can
+be used in Rails. A link to it will be provided here when it is complete.
 
 == Install
 
-Put Stockpile in your Gemfile:
+Stockpile is not intended to be installed by itself, as it does not implement a
+key-value store specific connection manager. Instead, install an
+store-specific gem which depends on Stockpile.
 
-  gem 'redis', '~> 3.0'
-  gem 'stockpile', '~> 0.5'
+  gem 'stockpile-redis', '~> 1.0'
 
 Or manually install:
 
-  % gem install redis stockpile
+  % gem install stockpile-redis
 
 and require Stockpile in your code:
 
-  require 'redis'
-  require 'stockpile'
-
-Note that Stockpile requires that the interface to the key-value store is
-already installed; it does not directly depend on a key-value store for
-automatic installation. This is intentional. I am considering splitting
-Stockpile::RedisConnectionManager into a separate gem, _stockpile-redis_ that
-will explicitly depend on _redis-namespace_ and _redis_.
+  require 'stockpile/redis'
 
 == Stockpile Semantic Versioning
 

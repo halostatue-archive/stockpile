@@ -17,7 +17,7 @@ describe Stockpile do
     end
   end
 
-  describe ".enable!" do
+  describe ".inject!" do
     let(:mod) { Module.new }
     let(:lrt) {
       Module.new do
@@ -32,74 +32,98 @@ describe Stockpile do
       end
     }
 
-    it "provides Mod.cache" do
-      ::Stockpile.enable!(mod)
-      assert_respond_to mod, :cache
-      assert_respond_to mod, :cache_adapter
-      assert_respond_to mod, :cache_adapter!
-      assert_equal "OK", mod.cache.connection.set('answer', 42)
-      assert_equal "42", mod.cache.connection.get('answer')
+    describe "Stockpile.inject!(Mod):" do
+      before { ::Stockpile.inject!(mod) }
+
+      it "defines Mod.cache" do
+        assert_respond_to mod, :cache
+      end
+
+      it "defines Mod.cache_adapter" do
+        assert_respond_to mod, :cache_adapter
+      end
+
+      it "defines Mod.cache_adapter!" do
+        assert_respond_to mod, :cache_adapter!
+      end
+
+      it "Fails cache initialization" do
+        assert_raises ArgumentError do
+          mod.cache
+        end
+      end
     end
 
-    it "{ adaptable: false } -> Mod.cache_adapter[!]" do
-      ::Stockpile.enable!(mod, :adaptable => false)
-      assert_respond_to mod, :cache
-      refute_respond_to mod, :cache_adapter
-      refute_respond_to mod, :cache_adapter!
+    describe "Stockpile.inject!(Mod, adaptable: false)" do
+      before { ::Stockpile.inject!(mod, adaptable: false) }
+
+      it "defines Mod.cache" do
+        assert_respond_to mod, :cache
+      end
+
+      it "does not define Mod.cache_adapter or Mod.cache_adapter!" do
+        refute_respond_to mod, :cache_adapter
+        refute_respond_to mod, :cache_adapter!
+      end
     end
 
-    it "{ method: stockpile } -> Mod.stockpile" do
-      ::Stockpile.enable!(mod, :method => :stockpile)
-      assert_respond_to mod, :stockpile
-      assert_respond_to mod, :stockpile_adapter
-      assert_respond_to mod, :stockpile_adapter!
+    describe "Stockpile.inject!(Mod, method: stockpile)" do
+      before { ::Stockpile.inject!(mod, method: :stockpile) }
+
+      it "defines Mod.stockpile" do
+        assert_respond_to mod, :stockpile
+      end
+
+      it "defines Mod.stockpile_adapter" do
+        assert_respond_to mod, :stockpile_adapter
+      end
+
+      it "defines Mod.stockpile_adapter!" do
+        assert_respond_to mod, :stockpile_adapter!
+      end
     end
 
-    it "{ method: :stockpile, adaptable: false } -> Mod.stockpile_adapter[!]" do
-      ::Stockpile.enable!(mod, :method => :stockpile, :adaptable => false)
-      assert_respond_to mod, :stockpile
-      refute_respond_to mod, :stockpile_adapter
-      refute_respond_to mod, :stockpile_adapter!
+    describe "Stockpile.inject!(Mod, method: :stockpile, adaptable: false)" do
+      before { ::Stockpile.inject!(mod, method: :stockpile, adaptable: false) }
+
+      it "defines Mod.stockpile" do
+        assert_respond_to mod, :stockpile
+      end
+
+      it "does not define Mod.stockpile_adapter or Mod.stockpile_adapter!" do
+        refute_respond_to mod, :stockpile_adapter
+        refute_respond_to mod, :stockpile_adapter!
+      end
     end
 
     describe "Mod.cache_adapter" do
       let(:now) { Time.now }
-      before { ::Stockpile.enable!(mod, :adaptable => true) }
+      let(:iso) { now.utc.iso8601 }
+      before do
+        ::Stockpile.inject!(mod, adaptable: true,
+                            default_manager: StockpileTestManager)
+      end
 
       it "adapts the cache with last_run_time" do
         mod.cache_adapter(lrt)
         assert_nil mod.cache.last_run_time('foo')
-        assert_equal true, mod.cache.last_run_time('foo', now)
+        assert_equal iso, mod.cache.last_run_time('foo', now)
         assert_equal now.to_i, mod.cache.last_run_time('foo').to_i
       end
 
       it "adapts the module with last_run_time" do
         mod.cache_adapter(lrt, mod)
         assert_nil mod.last_run_time('foo')
-        assert_equal true, mod.last_run_time('foo', now)
+        assert_equal iso, mod.last_run_time('foo', now)
         assert_equal now.to_i, mod.last_run_time('foo').to_i
       end
 
       it "adapts the lrt module with last_run_time" do
         mod.cache_adapter!(lrt)
         assert_nil lrt.last_run_time('foo')
-        assert_equal true, lrt.last_run_time('foo', now)
+        assert_equal iso, lrt.last_run_time('foo', now)
         assert_equal now.to_i, lrt.last_run_time('foo').to_i
       end
-    end
-  end
-
-  describe ".default_connection_manager" do
-    it "defaults to Stockpile::RedisConnectionManager" do
-      assert_same Stockpile::RedisConnectionManager,
-        ::Stockpile.default_connection_manager
-    end
-
-    it "can be set to something else" do
-      ::Stockpile.default_connection_manager = Object
-      assert_same Object, ::Stockpile.default_connection_manager
-      ::Stockpile.default_connection_manager =
-        ::Stockpile::RedisConnectionManager
     end
   end
 
