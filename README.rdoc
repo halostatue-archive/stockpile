@@ -21,7 +21,7 @@ from within a module.
 
   * *wide* (<tt>Stockpile.new</tt>, the default), where additional client
     connections are new instances of the client library;
-  * *narrow* (<tt>Stockpile.new(:narrow => true)</tt>, where additional client
+  * *narrow* (<tt>Stockpile.new(narrow: true)</tt>, where additional client
     connections use the same client library instance.
 
 * Stockpile can also be injected into a module
@@ -55,7 +55,7 @@ your Gemfile.
   # Show a Stockpile with no adapter capabilities, but name the method
   # stockpile, not cache. This will still usefully manage connections.
   module Cacher
-    Stockpile.inject!(self, :method => :stockpile, :adaptable => false)
+    Stockpile.inject!(self, method: :stockpile, adaptable: false)
   end
   Cacher.respond_to?(:stockpile) # => true
   Cacher.respond_to?(:stockpile_adapter) # => false

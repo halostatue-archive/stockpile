@@ -7,7 +7,6 @@ require 'minitest/focus'
 require 'minitest/moar'
 require 'minitest/rerun'
 require 'minitest/bisect'
-require 'minitest/power_assert'
 
 require 'stockpile'
 
