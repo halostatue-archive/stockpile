@@ -1,6 +1,5 @@
 = stockpile
 
-home :: https://stockpile.github.io/
 code :: https://github.com/halostatue/stockpile/
 bugs :: https://github.com/halostatue/stockpile/issues
 continuous integration :: {<img src="https://travis-ci.org/halostatue/stockpile.png" />}[https://travis-ci.org/halostatue/stockpile]
@@ -21,7 +20,7 @@ from within a module.
 
   * *wide* (<tt>Stockpile.new</tt>, the default), where additional client
     connections are new instances of the client library;
-  * *narrow* (<tt>Stockpile.new(narrow: true)</tt>, where additional client
+  * *narrow* (<tt>Stockpile.new(narrow: true)</tt>), where additional client
     connections use the same client library instance.
 
 * Stockpile can also be injected into a module

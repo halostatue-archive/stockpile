@@ -62,3 +62,4 @@ Here's the most direct way to get your work merged into the project:
 === Contributors
 
 * Austin Ziegler created stockpile.
+* Sean Miller helped wordsmith the documentation. Any errors are mine, not his.

@@ -33,7 +33,6 @@ spec = Hoe.spec 'stockpile' do
   self.extra_dev_deps << ['minitest-focus', '~> 1.1']
   self.extra_dev_deps << ['minitest-moar', '~> 0.0']
   self.extra_dev_deps << ['minitest-pretty_diff', '~> 0.1']
-  self.extra_dev_deps << ['minitest-rerun', '~> 0.1']
   self.extra_dev_deps << ['rake', '>= 10.0']
   self.extra_dev_deps << ['simplecov', '~> 0.7']
 end

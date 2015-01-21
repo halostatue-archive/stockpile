@@ -5,7 +5,6 @@ require 'minitest/autorun'
 require 'minitest/pretty_diff'
 require 'minitest/focus'
 require 'minitest/moar'
-require 'minitest/rerun'
 require 'minitest/bisect'
 
 require 'stockpile'
