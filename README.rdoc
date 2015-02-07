@@ -14,6 +14,11 @@ implemented connection managers. So far, only Redis has been implemented
 Stockpile also provides an adapter so that its functionality can be accessed
 from within a module.
 
+This is release 1.1, which fixes an issue with early initialization of an
+injected Stockpile instance during adaptation. See {the reported
+issue}[https://githbub.com/halostatue/stockpile/issues/2] for a complete
+explanation of the problem and solution.
+
 == Features
 
 * Stockpile manages key-value store connections. There are two variants:

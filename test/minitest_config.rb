@@ -21,8 +21,11 @@ class StockpileTestManager
 
     reset_data
 
-    def initialize
+    attr_reader :options
+
+    def initialize(options = {})
       @connected = false
+      @options   = options
       connect
     end
 
@@ -61,7 +64,8 @@ class StockpileTestManager
   end
 
   def initialize(options = {})
-    @narrow     = !!options.fetch(:narrow, ::Stockpile.narrow?)
+    @options    = options.dup
+    @narrow     = !!(@options.delete(:narrow) || ::Stockpile.narrow?)
     @connection = nil
     @clients    = {}
   end
@@ -131,7 +135,7 @@ class StockpileTestManager
 
   def connect_for_any
     return connection if connection && narrow?
-    Connection.new
+    Connection.new(@options)
   end
 end
 

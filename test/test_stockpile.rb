@@ -84,7 +84,9 @@ describe Stockpile do
     end
 
     describe "Stockpile.inject!(Mod, method: :stockpile, adaptable: false)" do
-      before { ::Stockpile.inject!(mod, method: :stockpile, adaptable: false) }
+      before do
+        ::Stockpile.inject!(mod, method: :stockpile, adaptable: false)
+      end
 
       it "defines Mod.stockpile" do
         assert_respond_to mod, :stockpile
@@ -102,6 +104,18 @@ describe Stockpile do
       before do
         ::Stockpile.inject!(mod, adaptable: true,
                             default_manager: StockpileTestManager)
+      end
+
+      it "does not initialize @__stockpile__" do
+        stub Stockpile, :new do
+          mod.cache_adapter(lrt)
+          refute_called Stockpile, :new
+          refute_nil mod.instance_variable_get(:@__stockpile_triggers__)
+        end
+
+        assert_equal({ namespace: 'n' },
+                     mod.cache(namespace: 'n').connection.options)
+        assert_respond_to mod.cache, :last_run_time
       end
 
       it "adapts the cache with last_run_time" do

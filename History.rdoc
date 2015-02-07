@@ -1,3 +1,11 @@
+=== 1.1 / 2015-02-DD
+
+* 1 bugfix
+
+  * Fix {issue #2}[https://github.com/halostatue/stockpile/issues/2], where
+    the use of the cache adapter causes the Stockpile cache manager to
+    initialize too early.
+
 === 1.0 / 2015-01-21
 
 * 1 major enhancement

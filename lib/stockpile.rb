@@ -2,8 +2,8 @@
 
 require 'forwardable'
 
-# Stockpile is a thin wrapper around connections to a fast key-value store used
-# for caching (currently only supporting Redis).
+# Stockpile is a thin wrapper around connections to a fast key-value store
+# used for caching (currently only supporting Redis).
 #
 # This provides a couple of layers of functionality:
 #
@@ -79,20 +79,31 @@ class Stockpile
       end
 
       name    = options.fetch(:method, :cache).to_sym
-      msc     = mod.singleton_class
-
+      mklass  = mod.singleton_class
       default = options.fetch(:default_manager, nil)
 
-      msc.send(:define_method, name) do |init_options = {}|
+      mklass.send(:define_method, name) do |init_options = {}|
         init_options = init_options.merge(default_manager: default)
         @__stockpile__ ||= ::Stockpile.new(init_options)
+        if defined? @__stockpile_triggers__
+          triggers, @__stockpile_triggers__ = @__stockpile_triggers__, []
+          triggers.each(&:call)
+        end
+        @__stockpile__
       end
 
       if options.fetch(:adaptable, true)
         adapter = :"#{name}_adapter"
-        msc.send(:define_method, adapter) do |m, k = nil|
+        mklass.send(:define_method, adapter) do |m, k = nil|
           o = self
-          send(name).singleton_class.send(:include, m)
+
+          trigger = -> { send(name).singleton_class.send(:include, m) }
+
+          if defined?(@__stockpile__) && @__stockpile__
+            trigger.call
+          else
+            (@__stockpile_triggers__ ||= []) << trigger
+          end
 
           if k
             mk = k.singleton_class
@@ -104,7 +115,7 @@ class Stockpile
           end
         end
 
-        msc.send(:define_method, :"#{adapter}!") do |m|
+        mklass.send(:define_method, :"#{adapter}!") do |m|
           send(adapter, m, m)
         end
       end
@@ -147,21 +158,22 @@ class Stockpile
   #    $rollout = Rollout.new(stockpile.connection_for(:rollout))
   #  end
   def initialize(options = {})
-    manager = options.fetch(:manager) {
-      options[:default_manager] || self.class.default_manager
-    }
+    options = options.dup
+    manager = options.delete(:manager)
+    default = options.delete(:default_manager) || self.class.default_manager
 
-    unless manager
+    unless manager || default
       raise ArgumentError, "No connection manager provided or set as default."
     end
 
-    clients = (Array(options[:clients]) + Array(options[:client])).flatten.uniq
+    manager ||= default
 
-    options = { narrow: Stockpile.narrow? }.merge(options.reject { |k, _|
-      k == :manager || k == :clients || k == :client
-    })
+    clients = [
+      Array(options.delete(:clients)), Array(options.delete(:client))
+    ].flatten.uniq
 
-    @manager = manager.new(options)
+    @manager = manager.new({ narrow: Stockpile.narrow? }.merge(options))
+
     connect(*clients)
     yield self if block_given?
   end
