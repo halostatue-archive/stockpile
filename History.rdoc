@@ -1,4 +1,15 @@
-=== 1.1 / 2015-02-DD
+=== 1.1 / 2015-02-09
+
+* 3 minor enhancements
+
+  * Created a base adapter, Stockpile::Base, that implements the core public
+    interface of a connection manager in a consistent way for argument parsing.
+
+  * Created a memory adapter as an example adapter. (This had previously been
+    a test adapter created in the test environment.)
+
+  * Documented changes to how clients can be specified for Stockpile.new,
+    Stockpile#connect, and Stockpile#connection_for.
 
 * 1 bugfix
 

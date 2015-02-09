@@ -14,7 +14,7 @@ require 'forwardable'
 class Stockpile
   extend Forwardable
 
-  VERSION = "1.0" # :nodoc:
+  VERSION = "1.1" # :nodoc:
 
   @default_manager = nil
 
@@ -85,10 +85,11 @@ class Stockpile
       mklass.send(:define_method, name) do |init_options = {}|
         init_options = init_options.merge(default_manager: default)
         @__stockpile__ ||= ::Stockpile.new(init_options)
-        if defined? @__stockpile_triggers__
-          triggers, @__stockpile_triggers__ = @__stockpile_triggers__, []
-          triggers.each(&:call)
-        end
+        @__stockpile_triggers__ ||= []
+
+        triggers, @__stockpile_triggers__ = @__stockpile_triggers__, []
+        triggers.each(&:call)
+
         @__stockpile__
       end
 
@@ -97,12 +98,14 @@ class Stockpile
         mklass.send(:define_method, adapter) do |m, k = nil|
           o = self
 
+          @__stockpile_triggers__ ||= []
+
           trigger = -> { send(name).singleton_class.send(:include, m) }
 
           if defined?(@__stockpile__) && @__stockpile__
             trigger.call
           else
-            (@__stockpile_triggers__ ||= []) << trigger
+            @__stockpile_triggers__ << trigger
           end
 
           if k
@@ -142,16 +145,24 @@ class Stockpile
   #             through any means.
   # +clients+:: Connections will be created for the provided list of clients.
   #             These connections must be assigned to their appropriate clients
-  #             after initialization. This may also be called +client+.
+  #             after initialization. This may also be called +client+. These
+  #             values may be provided as names (e.g., +:cache+), or as hashes
+  #             of client name to client options (e.g., <tt>{ cache: {
+  #             namespace: 'x' } }</tt>). See Stockpile#connect for more
+  #             details on this latter format.
   #
   # All other options will be passed to the connection provider.
   #
   # === Synopsis
   #
-  #  # Create and assign a connection to Redis.current, Resque, and Rollout.
-  #  # Under a narrow connection management width, all three will be the
-  #  # same client connection.
-  #  Stockpile.new(manager: Stockpile::Redis, clients: [ :redis, :resque ]) do |stockpile|
+  #   # Create and assign a connection to Redis.current, Resque, and Rollout.
+  #   # Under a narrow connection management width, all three will be the
+  #   # same client connection.
+  #   options = {
+  #     manager: Stockpile::Redis,
+  #     clients: [ :redis, :resque ]
+  #   }
+  #   Stockpile.new(options) do |stockpile|
   #    Redis.current = stockpile.connection_for(:redis)
   #    Resque.redis = stockpile.connection_for(:resque)
   #    # Clients will be created by name if necessary.
@@ -195,12 +206,45 @@ class Stockpile
   #
   # If the connection is using a narrow connection width, the same connection
   # will be shared.
+  #
+  # +clients+ may be provided in one of several ways:
+  #
+  # * A Hash object, mapping client names to client options.
+  #
+  #     connect(redis: nil, rollout: { namespace: 'rollout' })
+  #     # Transforms into:
+  #     # connect(redis: {}, rollout: { namespace: 'rollout' })
+  #
+  # * An (implicit) array of client names, for connections with no options
+  #   provided.
+  #
+  #     connect(:redis, :resque, :rollout)
+  #     # Transforms into:
+  #     # connect(redis: {}, resque: {}, rollout: {})
+  #
+  # * An array of Hash objects, mapping client names to client options.
+  #
+  #     connect({ redis: nil },
+  #             { rollout: { namespace: 'rollout' } })
+  #     # Transforms into:
+  #     # connect(redis: {}, rollout: { namespace: 'rollout' })
+  #
+  # * A mix of client names and Hash objects:
+  #
+  #     connect(:redis, { rollout: { namespace: 'rollout' } })
+  #     # Transforms into:
+  #     # connect(redis: {}, rollout: { namespace: 'rollout' })
+  #
+  # Stockpile cache providers will handle the parsing of options to ensure that
+  # only suitable options are passed along (most providers will ignore any
+  # options that change the target system).
   def_delegator :@manager, :connect
 
   ##
   # :method: connection_for
   # :call-seq:
   #   connection_for(client_name)
+  #   connection_for(client_name, options)
   #
   # Returns a connection for a particular client. If the connection manager is
   # using a narrow connection width, this returns the same as #connection.
@@ -208,6 +252,8 @@ class Stockpile
   # The +client_name+ of +:all+ will always return +nil+.
   #
   # If the requested client does not yet exist, the connection will be created.
+  # Options, if provided, can be used to customize a connection that has not
+  # yet been created.
   def_delegator :@manager, :connection_for
 
   ##

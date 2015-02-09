@@ -1,25 +1,24 @@
 # -*- encoding: utf-8 -*-
-# stub: stockpile 1.0 ruby lib
+# stub: stockpile 1.1 ruby lib
 
 Gem::Specification.new do |s|
   s.name = "stockpile"
-  s.version = "1.0"
+  s.version = "1.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib"]
   s.authors = ["Austin Ziegler"]
-  s.date = "2015-01-21"
-  s.description = "Stockpile is a simple key-value store connection manager framework. Stockpile\nitself does not implement a connection manager, but places expectations for\nimplemented connection managers. So far, only Redis has been implemented\n(stockpile-redis).\n\nStockpile also provides an adapter so that its functionality can be accessed\nfrom within a module."
+  s.date = "2015-02-09"
+  s.description = "Stockpile is a simple key-value store connection manager framework. Stockpile\nitself does not implement a connection manager, but places expectations for\nimplemented connection managers. So far, only Redis has been implemented\n(stockpile-redis).\n\nStockpile also provides an adapter so that its functionality can be accessed\nfrom within a module.\n\nRelease 1.1 fixes an issue with early initialization of an injected Stockpile\ninstance during adaptation\n({stockpile#2}[https://githbub.com/halostatue/stockpile/issues/2]). Several\nsmall improvements to Stockpile.new, Stockpile#connect, and\nStockpile#connection_for have been documented."
   s.email = ["halostatue@gmail.com"]
   s.extra_rdoc_files = ["Contributing.rdoc", "History.rdoc", "Licence.rdoc", "Manifest.txt", "README.rdoc", "Contributing.rdoc", "History.rdoc", "Licence.rdoc", "README.rdoc"]
-  s.files = [".autotest", ".gemtest", ".minitest.rb", ".travis.yml", "Contributing.rdoc", "Gemfile", "History.rdoc", "Licence.rdoc", "Manifest.txt", "README.rdoc", "Rakefile", "lib/stockpile.rb", "test/minitest_config.rb", "test/test_stockpile.rb"]
+  s.files = [".autotest", ".gemtest", ".minitest.rb", ".travis.yml", "Contributing.rdoc", "Gemfile", "History.rdoc", "Licence.rdoc", "Manifest.txt", "README.rdoc", "Rakefile", "lib/stockpile.rb", "lib/stockpile/base.rb", "lib/stockpile/memory.rb", "test/minitest_config.rb", "test/test_stockpile.rb", "test/test_stockpile_base.rb"]
   s.homepage = "https://github.com/halostatue/stockpile/"
   s.licenses = ["MIT"]
   s.rdoc_options = ["--main", "README.rdoc"]
   s.required_ruby_version = Gem::Requirement.new(">= 1.9.2")
   s.rubygems_version = "2.2.2"
   s.summary = "Stockpile is a simple key-value store connection manager framework"
-  s.test_files = ["test/test_stockpile.rb"]
 
   if s.respond_to? :specification_version then
     s.specification_version = 4

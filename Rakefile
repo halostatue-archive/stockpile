@@ -2,6 +2,7 @@
 
 require 'rubygems'
 require 'hoe'
+require 'rake/clean'
 
 Hoe.plugin :doofus
 Hoe.plugin :gemspec2
@@ -37,6 +38,7 @@ spec = Hoe.spec 'stockpile' do
   self.extra_dev_deps << ['simplecov', '~> 0.7']
 end
 
+
 namespace :test do
   task :coverage do
     spec.test_prelude = [
@@ -46,6 +48,7 @@ namespace :test do
     ].join('; ')
     Rake::Task['test'].execute
   end
+  CLOBBER << 'coverage'
 end
 
 # vim: syntax=ruby

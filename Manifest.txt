@@ -10,5 +10,8 @@ Manifest.txt
 README.rdoc
 Rakefile
 lib/stockpile.rb
+lib/stockpile/base.rb
+lib/stockpile/memory.rb
 test/minitest_config.rb
 test/test_stockpile.rb
+test/test_stockpile_base.rb

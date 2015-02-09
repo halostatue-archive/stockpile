@@ -14,10 +14,11 @@ implemented connection managers. So far, only Redis has been implemented
 Stockpile also provides an adapter so that its functionality can be accessed
 from within a module.
 
-This is release 1.1, which fixes an issue with early initialization of an
-injected Stockpile instance during adaptation. See {the reported
-issue}[https://githbub.com/halostatue/stockpile/issues/2] for a complete
-explanation of the problem and solution.
+Release 1.1 fixes an issue with early initialization of an injected Stockpile
+instance during adaptation
+({stockpile#2}[https://githbub.com/halostatue/stockpile/issues/2]). Several
+small improvements to Stockpile.new, Stockpile#connect, and
+Stockpile#connection_for have been documented.
 
 == Features
 
@@ -40,7 +41,7 @@ your Gemfile.
 
 == Synopsis
 
-  wide = Stockpile.new # A Stockpile to Redis.
+  wide = Stockpile.new # A Stockpile instance.
   wide.connection.set('hello', 'world') # => 'OK'
   wide.connection.get('hello') # => 'world'
 
@@ -137,8 +138,8 @@ be used in Rails. A link to it will be provided here when it is complete.
 == Install
 
 Stockpile is not intended to be installed by itself, as it does not implement a
-key-value store specific connection manager. Instead, install an
-store-specific gem which depends on Stockpile.
+key-value store specific connection manager. Instead, install an store-specific
+gem which depends on Stockpile.
 
   gem 'stockpile-redis', '~> 1.0'
 
