@@ -40,7 +40,7 @@ describe Stockpile do
       end
     }
 
-    it "throws an ArgumentError unless it’s a class or module" do
+    it "throws an ArgumentError unless it's a class or module" do
       assert_raises ArgumentError do
         ::Stockpile.inject!(Object.new)
       end
