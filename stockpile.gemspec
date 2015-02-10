@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib"]
   s.authors = ["Austin Ziegler"]
-  s.date = "2015-02-09"
+  s.date = "2015-02-10"
   s.description = "Stockpile is a simple key-value store connection manager framework. Stockpile\nitself does not implement a connection manager, but places expectations for\nimplemented connection managers. So far, only Redis has been implemented\n(stockpile-redis).\n\nStockpile also provides an adapter so that its functionality can be accessed\nfrom within a module.\n\nRelease 1.1 fixes an issue with early initialization of an injected Stockpile\ninstance during adaptation\n({stockpile#2}[https://githbub.com/halostatue/stockpile/issues/2]). Several\nsmall improvements to Stockpile.new, Stockpile#connect, and\nStockpile#connection_for have been documented."
   s.email = ["halostatue@gmail.com"]
   s.extra_rdoc_files = ["Contributing.rdoc", "History.rdoc", "Licence.rdoc", "Manifest.txt", "README.rdoc", "Contributing.rdoc", "History.rdoc", "Licence.rdoc", "README.rdoc"]
