@@ -144,10 +144,10 @@ be used in Rails. A link to it will be provided here when it is complete.
 == Install
 
 Stockpile is not intended to be installed by itself, as it does not implement a
-key-value store specific connection manager. Instead, install an store-specific
+key-value store specific connection manager. Instead, install a store-specific
 gem which depends on Stockpile.
 
-  gem 'stockpile-redis', '~> 1.0'
+  gem 'stockpile-redis', '~> 1.1'
 
 Or manually install:
 
