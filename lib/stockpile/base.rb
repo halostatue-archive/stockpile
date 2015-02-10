@@ -57,8 +57,8 @@ class Stockpile
     def connect(*client_names)
       @connection ||= client_connect
 
-      clients_from(*client_names).each { |name, options|
-        connection_for(name, options || {})
+      clients_from(*client_names).each { |client_name, options|
+        connection_for(client_name, options || {})
       }
 
       connection

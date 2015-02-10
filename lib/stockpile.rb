@@ -207,6 +207,8 @@ class Stockpile
   # If the connection is using a narrow connection width, the same connection
   # will be shared.
   #
+  # === Clients
+  #
   # +clients+ may be provided in one of several ways:
   #
   # * A Hash object, mapping client names to client options.
@@ -235,6 +237,8 @@ class Stockpile
   #     # Transforms into:
   #     # connect(redis: {}, rollout: { namespace: 'rollout' })
   #
+  # ==== Client Options
+  #
   # Stockpile cache providers will handle the parsing of options to ensure that
   # only suitable options are passed along (most providers will ignore any
   # options that change the target system).
@@ -251,9 +255,8 @@ class Stockpile
   #
   # The +client_name+ of +:all+ will always return +nil+.
   #
-  # If the requested client does not yet exist, the connection will be created.
-  # Options, if provided, can be used to customize a connection that has not
-  # yet been created.
+  # If the requested client does not yet exist, the connection will be created
+  # with the provided options.
   def_delegator :@manager, :connection_for
 
   ##

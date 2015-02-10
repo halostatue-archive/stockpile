@@ -57,6 +57,12 @@ your Gemfile.
   narrow.connection_for(:resque) != narrow.connection # => true
   narrow.connection_for(:resque).redis == narrow.connection # => true
 
+  # Standard namespace handling.
+  narrow.connection_for(:other, namespace: 'other') !=
+    narrow.connection # => true
+  narrow.connection_for(:other, namespace: 'other').redis !=
+    narrow.connection # => true
+
   # Show a Stockpile with no adapter capabilities, but name the method
   # stockpile, not cache. This will still usefully manage connections.
   module Cacher

@@ -38,7 +38,6 @@ spec = Hoe.spec 'stockpile' do
   self.extra_dev_deps << ['simplecov', '~> 0.7']
 end
 
-
 namespace :test do
   task :coverage do
     spec.test_prelude = [
