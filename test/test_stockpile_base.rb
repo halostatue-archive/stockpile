@@ -20,19 +20,17 @@ describe Stockpile::Base do
   }
 
   describe 'constructor' do
-    it "uses the default connection width by default" do
+    it 'uses the default connection width by default' do
       stub ::Stockpile, :narrow?, lambda { false } do
-        refute Stockpile::Base.new.narrow?,
-          "should be narrow, but is not"
+        refute Stockpile::Base.new.narrow?, 'should be narrow, but is not'
       end
 
       stub ::Stockpile, :narrow?, lambda { true } do
-        assert Stockpile::Base.new.narrow?,
-          "is not narrow, but should be"
+        assert Stockpile::Base.new.narrow?, 'is not narrow, but should be'
       end
     end
 
-    it "can be told which connection width to use explicitly" do
+    it 'can be told which connection width to use explicitly' do
       stub ::Stockpile, :narrow?, lambda { false } do
         assert mem_narrow.narrow?
       end
@@ -42,7 +40,7 @@ describe Stockpile::Base do
       end
     end
 
-    it "passes settings through to the client" do
+    it 'passes settings through to the client' do
       options = {
         url: 'test://xyz/'
       }
@@ -50,54 +48,60 @@ describe Stockpile::Base do
       assert_equal 'test://xyz/', mem.connect.options[:url]
     end
 
-    it "has no clients by default" do
+    it 'has no clients by default' do
       assert_clients [], ::Stockpile::Memory.new
+    end
+
+    it 'works with an OpenStruct provided as options' do
+      require 'ostruct'
+      mem = ::Stockpile::Memory.new(OpenStruct.new(url: 'test://xyz/'))
+      assert_equal 'test://xyz/', mem.connect.options[:url]
     end
   end
 
-  describe "#connect" do
-    it "raises NotImplementedError unless #client_connect is implemented" do
+  describe '#connect' do
+    it 'raises NotImplementedError unless #client_connect is implemented' do
       assert_raises NotImplementedError do
         ::Stockpile::Base.new.connect
       end
     end
 
-    it "creates a connection to the client" do
+    it 'creates a connection to the client' do
       assert_nil mem.connection
       refute_nil mem.connect
     end
 
-    it "creates a namespaced connection to the client" do
+    it 'creates a namespaced connection to the client' do
       assert_nil mem_namespace.connection
       refute_nil mem_namespace.connect
     end
 
-    describe "with a wide connection width" do
+    describe 'with a wide connection width' do
       before do
         mem_wide.connect(:hoge, { quux: {} })
       end
 
-      it "connects multiple clients" do
+      it 'connects multiple clients' do
         assert_clients [ :hoge, :quux ], mem_wide
       end
 
-      it "connects *different* clients" do
+      it 'connects *different* clients' do
         refute_same mem_wide.connection, mem_wide.connection_for(:hoge)
         refute_same mem_wide.connection, mem_wide.connection_for(:quux)
         refute_same mem_wide.connection_for(:hoge), mem_wide.connection_for(:quux)
       end
     end
 
-    describe "with a narrow connection width" do
+    describe 'with a narrow connection width' do
       before do
         mem_narrow.connect(:hoge, :quux)
       end
 
-      it "appears to connect multiple clients" do
+      it 'appears to connect multiple clients' do
         assert_clients [ :hoge, :quux ], mem_narrow
       end
 
-      it "returns identical clients" do
+      it 'returns identical clients' do
         assert_same mem_narrow.connection, mem_narrow.connection_for(:hoge)
         assert_same mem_narrow.connection, mem_narrow.connection_for(:quux)
         assert_same mem_narrow.connection_for(:hoge), mem_narrow.connection_for(:quux)
@@ -105,8 +109,8 @@ describe Stockpile::Base do
     end
   end
 
-  describe "#connection_for" do
-    it "raises NotImplementedError unless #client_connect is implemented" do
+  describe '#connection_for' do
+    it 'raises NotImplementedError unless #client_connect is implemented' do
       assert_raises NotImplementedError do
         instance_stub ::Stockpile::Base, :connection, -> { true } do
           ::Stockpile::Base.new.connection_for(:foo)
@@ -114,16 +118,16 @@ describe Stockpile::Base do
       end
     end
 
-    describe "with a wide connection width" do
-      it "connects the main client" do
+    describe 'with a wide connection width' do
+      it 'connects the main client' do
         mem_wide.connection_for(:global)
         assert mem_wide.connection
         refute_same mem_wide.connection, mem_wide.connection_for(:global)
       end
     end
 
-    describe "with a narrow connection width" do
-      it "connects the main client" do
+    describe 'with a narrow connection width' do
+      it 'connects the main client' do
         mem_narrow.connection_for(:global)
         assert mem_narrow.connection
         assert_same mem_narrow.connection, mem_narrow.connection_for(:global)
@@ -133,8 +137,8 @@ describe Stockpile::Base do
 
   let(:connection) { Stockpile::Memory::Data }
 
-  describe "#disconnect" do
-    it "raises NotImplementedError unless #client_disconnect is implemented" do
+  describe '#disconnect' do
+    it 'raises NotImplementedError unless #client_disconnect is implemented' do
       base = ::Stockpile::Base.new
       assert_raises NotImplementedError do
         instance_stub ::Stockpile::Base, :connect do
@@ -145,7 +149,7 @@ describe Stockpile::Base do
       end
     end
 
-    describe "with a wide connection width" do
+    describe 'with a wide connection width' do
       let(:global) { mem_wide.connection }
       let(:hoge) { mem_wide.connection_for(:hoge) }
 
@@ -154,18 +158,18 @@ describe Stockpile::Base do
         assert hoge.connected? && global.connected?
       end
 
-      it "disconnects the global client" do
+      it 'disconnects the global client' do
         mem_wide.disconnect
         assert hoge.connected? && !global.connected?
       end
 
-      it "disconnects the redis and global clients" do
+      it 'disconnects the redis and global clients' do
         mem_wide.disconnect(:hoge)
         refute hoge.connected? || global.connected?
       end
     end
 
-    describe "with a narrow connection width" do
+    describe 'with a narrow connection width' do
       let(:global) { mem_narrow.connection }
       let(:hoge) { mem_narrow.connection_for(:hoge) }
 
@@ -174,20 +178,20 @@ describe Stockpile::Base do
         assert hoge.connected? && global.connected?
       end
 
-      it "#disconnect disconnects all clients" do
+      it '#disconnect disconnects all clients' do
         mem_narrow.disconnect
         refute hoge.connected? || global.connected?
       end
 
-      it "#disconnect(:hoge) disconnects all clients" do
+      it '#disconnect(:hoge) disconnects all clients' do
         mem_narrow.disconnect(:hoge)
         refute hoge.connected? || global.connected?
       end
     end
   end
 
-  describe "#reconnect" do
-    it "raises NotImplementedError unless #client_reconnect is implemented" do
+  describe '#reconnect' do
+    it 'raises NotImplementedError unless #client_reconnect is implemented' do
       base = ::Stockpile::Base.new
       assert_raises NotImplementedError do
         instance_stub ::Stockpile::Base, :connect do
@@ -198,7 +202,7 @@ describe Stockpile::Base do
       end
     end
 
-    describe "with a wide connection width" do
+    describe 'with a wide connection width' do
       let(:global) { mem_wide.connection }
       let(:hoge) { mem_wide.connection_for(:hoge) }
 
@@ -209,18 +213,18 @@ describe Stockpile::Base do
         refute hoge.connected? || global.connected?
       end
 
-      it "reconnects the global client" do
+      it 'reconnects the global client' do
         mem_wide.reconnect
         assert !hoge.connected? && global.connected?
       end
 
-      it "reconnects the redis and global clients" do
+      it 'reconnects the redis and global clients' do
         mem_wide.reconnect(:hoge)
         assert hoge.connected? && global.connected?
       end
     end
 
-    describe "with a narrow connection width" do
+    describe 'with a narrow connection width' do
       let(:global) { mem_narrow.connection }
       let(:hoge) { mem_narrow.connection_for(:hoge) }
 
@@ -231,12 +235,12 @@ describe Stockpile::Base do
         refute hoge.connected? || global.connected?
       end
 
-      it "#reconnect reconnects the all clients" do
+      it '#reconnect reconnects the all clients' do
         mem_narrow.reconnect
         assert hoge.connected? && global.connected?
       end
 
-      it "#reconnect(:hoge:) reconnects all clients" do
+      it '#reconnect(:hoge:) reconnects all clients' do
         mem_narrow.reconnect(:hoge)
         assert hoge.connected? && global.connected?
       end
