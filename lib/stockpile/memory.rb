@@ -1,4 +1,4 @@
-# -*- ruby encoding: utf-8 -*-
+# frozen_string_literal: true
 
 require 'stockpile/base'
 
@@ -49,18 +49,19 @@ class Stockpile
       end
 
       def hget(key, field)
-        raise unless connected?
+        fail unless connected?
         valid_hkey!(key)[field]
       end
 
       def hset(key, field, value)
-        raise unless connected?
+        fail unless connected?
         valid_hkey!(key)[field] = value
       end
 
       private
+
       def check_valid!
-        raise unless connected?
+        fail unless connected?
       end
 
       def valid_hkey!(key)
@@ -71,7 +72,7 @@ class Stockpile
         when Hash
           nil
         else
-          raise
+          fail
         end
         h
       end
@@ -153,17 +154,19 @@ class Stockpile
     # which disconnects all connections implicitly.
 
     ##
+
     private
-    def client_connect(name = nil, options = {})
+
+    def client_connect(_name = nil, options = {})
       return connection if connection && narrow?
       Data.new(@options.merge(options))
     end
 
-    def client_reconnect(client = connection())
+    def client_reconnect(client = connection)
       client.reconnect if client
     end
 
-    def client_disconnect(client = connection())
+    def client_disconnect(client = connection)
       client.disconnect if client
     end
   end

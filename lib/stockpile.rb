@@ -1,4 +1,4 @@
-# coding: utf-8
+# frozen_string_literal: true
 
 require 'forwardable'
 
@@ -14,7 +14,7 @@ require 'forwardable'
 class Stockpile
   extend Forwardable
 
-  VERSION = "1.1" # :nodoc:
+  VERSION = '2.0' # :nodoc:
 
   @default_manager = nil
 
@@ -75,7 +75,7 @@ class Stockpile
     #   LastRunTime.last_run_time('adaptable_application')
     def inject!(mod, options = {})
       unless mod.kind_of?(Module)
-        raise ArgumentError, "#{mod} is not a class or module"
+        fail ArgumentError, "#{mod} is not a class or module"
       end
 
       name    = options.fetch(:method, :cache).to_sym
@@ -174,7 +174,7 @@ class Stockpile
     default = options.delete(:default_manager) || self.class.default_manager
 
     unless manager || default
-      raise ArgumentError, "No connection manager provided or set as default."
+      fail ArgumentError, 'No connection manager provided or set as default.'
     end
 
     manager ||= default
