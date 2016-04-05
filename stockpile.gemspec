@@ -8,7 +8,7 @@ Gem::Specification.new do |s|
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.require_paths = ["lib"]
   s.authors = ["Austin Ziegler"]
-  s.date = "2015-02-10"
+  s.date = "2016-04-05"
   s.description = "Stockpile is a simple key-value store connection manager framework. Stockpile\nitself does not implement a connection manager, but places expectations for\nimplemented connection managers. So far, only Redis has been implemented\n(stockpile-redis).\n\nStockpile also provides an adapter so that its functionality can be accessed\nfrom within a module.\n\nRelease 1.1 fixes an issue with early initialization of an injected Stockpile\ninstance during adaptation\n({stockpile#2}[https://githbub.com/halostatue/stockpile/issues/2]). Several\nsmall improvements to Stockpile.new, Stockpile#connect, and\nStockpile#connection_for have been documented."
   s.email = ["halostatue@gmail.com"]
   s.extra_rdoc_files = ["Contributing.rdoc", "History.rdoc", "Licence.rdoc", "Manifest.txt", "README.rdoc", "Contributing.rdoc", "History.rdoc", "Licence.rdoc", "README.rdoc"]
@@ -17,14 +17,14 @@ Gem::Specification.new do |s|
   s.licenses = ["MIT"]
   s.rdoc_options = ["--main", "README.rdoc"]
   s.required_ruby_version = Gem::Requirement.new(">= 1.9.2")
-  s.rubygems_version = "2.2.2"
+  s.rubygems_version = "2.5.1"
   s.summary = "Stockpile is a simple key-value store connection manager framework"
 
   if s.respond_to? :specification_version then
     s.specification_version = 4
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_development_dependency(%q<minitest>, ["~> 5.5"])
+      s.add_development_dependency(%q<minitest>, ["~> 5.8"])
       s.add_development_dependency(%q<rdoc>, ["~> 4.0"])
       s.add_development_dependency(%q<hoe-doofus>, ["~> 1.0"])
       s.add_development_dependency(%q<hoe-gemspec2>, ["~> 1.1"])
@@ -38,9 +38,9 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<minitest-pretty_diff>, ["~> 0.1"])
       s.add_development_dependency(%q<rake>, [">= 10.0"])
       s.add_development_dependency(%q<simplecov>, ["~> 0.7"])
-      s.add_development_dependency(%q<hoe>, ["~> 3.13"])
+      s.add_development_dependency(%q<hoe>, ["~> 3.15"])
     else
-      s.add_dependency(%q<minitest>, ["~> 5.5"])
+      s.add_dependency(%q<minitest>, ["~> 5.8"])
       s.add_dependency(%q<rdoc>, ["~> 4.0"])
       s.add_dependency(%q<hoe-doofus>, ["~> 1.0"])
       s.add_dependency(%q<hoe-gemspec2>, ["~> 1.1"])
@@ -54,10 +54,10 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<minitest-pretty_diff>, ["~> 0.1"])
       s.add_dependency(%q<rake>, [">= 10.0"])
       s.add_dependency(%q<simplecov>, ["~> 0.7"])
-      s.add_dependency(%q<hoe>, ["~> 3.13"])
+      s.add_dependency(%q<hoe>, ["~> 3.15"])
     end
   else
-    s.add_dependency(%q<minitest>, ["~> 5.5"])
+    s.add_dependency(%q<minitest>, ["~> 5.8"])
     s.add_dependency(%q<rdoc>, ["~> 4.0"])
     s.add_dependency(%q<hoe-doofus>, ["~> 1.0"])
     s.add_dependency(%q<hoe-gemspec2>, ["~> 1.1"])
@@ -71,6 +71,6 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<minitest-pretty_diff>, ["~> 0.1"])
     s.add_dependency(%q<rake>, [">= 10.0"])
     s.add_dependency(%q<simplecov>, ["~> 0.7"])
-    s.add_dependency(%q<hoe>, ["~> 3.13"])
+    s.add_dependency(%q<hoe>, ["~> 3.15"])
   end
 end

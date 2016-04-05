@@ -1,0 +1,247 @@
+---
+# inherit_from: .rubocop_todo.yml
+
+AllCops:
+  Include:
+    - '**/Rakefile'
+    - '**/config.rb'
+  Exclude:
+    - 'bin/**/*'
+    - 'config/**/*'
+    - 'script/**/*'
+    - 'tmp/**/*'
+  DisplayCopNames: true
+  TargetRubyVersion: 2.3
+
+Style/AlignHash:
+  EnforcedHashRocketStyle: key
+  EnforcedColonStyle: key
+  EnforcedLastArgumentHashStyle: always_ignore
+
+Style/AndOr:
+  EnforcedStyle: conditionals
+
+Style/BarePercentLiterals:
+  EnforcedStyle: percent_q
+
+Style/BracesAroundHashParameters:
+  EnforcedStyle: context_dependent
+
+Style/Documentation:
+  Enabled: false
+
+Style/Lambda:
+  Enabled: false
+
+Style/TrailingCommaInLiteral:
+  Enabled: false
+
+Style/TrailingCommaInArguments:
+  Enabled: false
+
+Style/ClassAndModuleChildren:
+  Enabled: false
+
+Style/MultilineMethodCallIndentation:
+  EnforcedStyle: indented
+
+Style/MultilineOperationIndentation:
+  EnforcedStyle: indented
+
+Style/DotPosition:
+  EnforcedStyle: trailing
+
+Style/AlignParameters:
+  EnforcedStyle: with_fixed_indentation
+
+# This replaces the old Style/Blocks. The default for this is still stupid
+# (multiline blocks are do/end and single-line blocks are {/}), but it now
+# performs a semantic analysis, allowing for the more nuanced version proposed
+# by Jim Weirich around 2004. If a block is used as part of an assignment or
+# method chaining, prefer {/} delimiters; if not, prefer do/end delimiters. It
+# isn't *quite* that simple in all circumstances, but we can add them to one of
+# three groups: ProceduralMethods (prefer do/end), FunctionalMethods ({/}), and
+# ignored (because it does not matter).
+Style/BlockDelimiters:
+  Enabled: false
+  EnforcedStyle: semantic
+  ProceduralMethods:
+    # Methods that are known to be procedural in nature but look functional from
+    # their usage, e.g.
+    #
+    #   time = Benchmark.realtime do
+    #     foo.bar
+    #   end
+    #
+    # Here, the return value of the block is discarded but the return value of
+    # `Benchmark.realtime` is used.
+    - benchmark
+    - bm
+    - bmbm
+    - create
+    - each_with_object
+    - measure
+    - new
+    - realtime
+    - tap
+    - with_object
+    - assert_raises
+    - solr_search
+    - solr_paginated
+    - all_of
+    - any_of
+  FunctionalMethods:
+    # Methods that are known to be functional in nature but look procedural from
+    # their usage, e.g.
+    #
+    #   let(:foo) { Foo.new }
+    #
+    # Here, the return value of `Foo.new` is used to define a `foo` helper but
+    # doesn't appear to be used from the return value of `let`.
+    - let
+    - let!
+    - subject
+    - watch
+  IgnoredMethods:
+    # Methods that can be either procedural or functional and cannot be
+    # categorised from their usage alone, e.g.
+    #
+    #   foo = lambda do |x|
+    #     puts "Hello, #{x}"
+    #   end
+    #
+    #   foo = lambda do |x|
+    #     x * 100
+    #   end
+    #
+    # Here, it is impossible to tell from the return value of `lambda` whether
+    # the inner block's return value is significant.
+    - lambda
+    - proc
+    - it
+Performance/FixedSize:
+  Enabled: false
+
+Style/FormatString:
+  Enabled: false
+
+Style/NumericLiterals:
+  Enabled: false
+
+Style/SpaceInsideBrackets:
+  Enabled: false
+
+Style/CommentAnnotation:
+  Enabled: false
+
+Style/AsciiComments:
+  Enabled: false
+
+Style/ClassCheck:
+  EnforcedStyle: kind_of?
+
+Style/RegexpLiteral:
+  EnforcedStyle: mixed
+
+Style/CommandLiteral:
+  EnforcedStyle: percent_x
+
+Style/UnneededPercentQ:
+  Enabled: false
+
+Style/IndentAssignment:
+  Enabled: false
+
+Metrics/AbcSize:
+  Enabled: false
+
+Metrics/CyclomaticComplexity:
+  Enabled: false
+
+Metrics/MethodLength:
+  Enabled: false
+
+Metrics/ModuleLength:
+  Enabled: false
+
+Metrics/ClassLength:
+  Enabled: false
+
+Metrics/PerceivedComplexity:
+  Enabled: false
+
+Metrics/LineLength:
+  Max: 90
+  Exclude:
+    - test/**/*
+    - db/schema.rb
+    - db/migrate/**/*
+    - Gemfile
+
+Style/MethodDefParentheses:
+  Exclude:
+    - test/**/*
+
+Style/ClassVars:
+  Exclude:
+    - app/controllers/concerns/datahub_auth_user_discovery.rb
+
+Style/DoubleNegation:
+  Enabled: false
+
+Rails/HasAndBelongsToMany:
+  Exclude:
+    - app/models/place.rb
+    - app/models/content_page.rb
+    - app/models/category.rb
+    - app/models/role.rb
+
+Style/FileName:
+  Exclude:
+    - Gemfile
+
+Style/SpaceBeforeFirstArg:
+  Exclude:
+    - db/migrate/20151006164826_initial.rb
+    - db/schema.rb
+
+Style/ExtraSpacing:
+  Exclude:
+    - db/migrate/20151006164826_initial.rb
+    - db/schema.rb
+
+Style/WordArray:
+  Exclude:
+    - db/migrate/20151006164826_initial.rb
+    - db/schema.rb
+
+Style/StringLiterals:
+  Exclude:
+    - db/migrate/20151006164826_initial.rb
+    - db/schema.rb
+
+Style/EmptyLinesAroundBlockBody:
+  Exclude:
+    - db/schema.rb
+
+Style/RedundantSelf:
+  Exclude:
+    - test/test_helper.rb
+
+Style/SignalException:
+  EnforcedStyle: semantic
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Style/Alias:
+  EnforcedStyle: prefer_alias_method
+
+Style/SpecialGlobalVars:
+  Enabled: false
+
+Performance/RedundantBlockCall:
+  Enabled: false
+
+Style/LambdaCall:
+  Enabled: false

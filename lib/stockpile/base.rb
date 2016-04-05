@@ -28,6 +28,7 @@ class Stockpile
     #               manager.
     def initialize(options = {})
       @options    = options.dup
+      @options    = options.to_h unless @options.kind_of?(Hash)
       @narrow     = !!@options.fetch(:narrow, ::Stockpile.narrow?)
       @connection = nil
       @clients    = {}
