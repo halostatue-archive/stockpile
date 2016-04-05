@@ -1,10 +1,14 @@
 .autotest
 .gemtest
 .minitest.rb
+.rubocop.yml
+.simplecov-prelude.rb
 .travis.yml
+.workenv
+Code-of-Conduct.md
 Contributing.rdoc
 Gemfile
-History.rdoc
+History.md
 Licence.rdoc
 Manifest.txt
 README.rdoc

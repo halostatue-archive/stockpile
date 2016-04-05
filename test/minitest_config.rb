@@ -1,4 +1,4 @@
-# -*- ruby encoding: utf-8 -*-
+# frozen_string_literal: true
 
 gem 'minitest'
 require 'minitest/autorun'
@@ -18,11 +18,7 @@ module Minitest::ENVStub
   def stub_env env, options = {}, *block_args, &block
     mock = lambda { |key|
       env.fetch(key) { |k|
-        if options[:passthrough]
-          ENV.send(:"__minitest_stub__[]", k)
-        else
-          nil
-        end
+        ENV.send(:"__minitest_stub__[]", k) if options[:passthrough]
       }
     }
 

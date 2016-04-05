@@ -2,7 +2,7 @@
 
 code :: https://github.com/halostatue/stockpile/
 bugs :: https://github.com/halostatue/stockpile/issues
-continuous integration :: {<img src="https://travis-ci.org/halostatue/stockpile.png" />}[https://travis-ci.org/halostatue/stockpile]
+continuous integration :: {<img src="https://travis-ci.org/halostatue/stockpile.svg?branch=master" alt="Build Status" />}[https://travis-ci.org/halostatue/stockpile]
 
 == Description
 
@@ -14,11 +14,10 @@ implemented connection managers. So far, only Redis has been implemented
 Stockpile also provides an adapter so that its functionality can be accessed
 from within a module.
 
-Release 1.1 fixes an issue with early initialization of an injected Stockpile
-instance during adaptation
-({stockpile#2}[https://githbub.com/halostatue/stockpile/issues/2]). Several
-small improvements to Stockpile.new, Stockpile#connect, and
-Stockpile#connection_for have been documented.
+Release 2.0 fixes an issue when Stockpile options are provided with an
+OpenStruct, originally reported as
+{stockpile-redis#1}[https://github.com/halostatue/stockpile-redis/issues/1].
+Support for Ruby 1.9 has been dropped.
 
 == Features
 

@@ -1,4 +1,4 @@
-# coding: utf-8
+# frozen_string_literal: true
 
 require 'stockpile'
 
@@ -28,6 +28,7 @@ class Stockpile
     #               manager.
     def initialize(options = {})
       @options    = options.dup
+      @options    = options.to_h unless @options.kind_of?(Hash)
       @narrow     = !!@options.fetch(:narrow, ::Stockpile.narrow?)
       @connection = nil
       @clients    = {}
@@ -121,6 +122,7 @@ class Stockpile
     end
 
     private
+
     # Converts +client_names+ into a hash of client names to options.
     #
     # * A Hash object, mapping client names to client options.
@@ -169,18 +171,18 @@ class Stockpile
     end
 
     # Performs a client connect action. Must be implemented by a client.
-    def client_connect(name = nil, options = {})
-      raise NotImplementedError
+    def client_connect(_name = nil, _options = {})
+      fail NotImplementedError
     end
 
     # Performs a client reconnect action. Must be implemented by a client.
-    def client_reconnect(client = connect())
-      raise NotImplementedError
+    def client_reconnect(_client = connect)
+      fail NotImplementedError
     end
 
     # Performs a client disconnect action. Must be implemented by a client.
-    def client_disconnect(client = connect())
-      raise NotImplementedError
+    def client_disconnect(_client = connect)
+      fail NotImplementedError
     end
   end
 end
